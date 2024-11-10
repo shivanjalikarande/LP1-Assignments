@@ -1,0 +1,54 @@
+File opened successfully
+
+Macro Pass1
+MACRO 
+M1 &X, &Y, &A=AREG, &B= 
+MOVER &A, &X, 
+ADD &A, ='1' 
+MOVER &B, &Y, 
+ADD &A, ='5' 
+MEND 
+MACRO 
+M2 &P, &Q, &U=CREG, &V=DREG 
+MOVER &U, &P, 
+MOVER &V, &Q, 
+ADD &U, ='15' 
+ADD &V, ='10' 
+MEND 
+
+
+-------- PNTAB --------
+
+PNTAB for Macro 1
+1 &X
+2 &Y
+3 &A
+4 &B
+
+PNTAB for Macro 2
+1 &P
+2 &Q
+3 &U
+4 &V
+
+ ----------- KPTAB ---------
+&A AREG
+&B
+&U CREG
+&V DRE
+
+----- MNT ----
+M1 2 2 0 0
+M2 2 2 4 2
+
+ ------ MDT ----
+MOVER (P,3) (P,1)
+ADD (P,3) ='1'
+MOVER (P,4) (P,2)
+ADD (P,3) ='5'
+MEND
+MOVER (P,3) (P,1)
+MOVER (P,4) (P,2)
+ADD (P,3) ='15' 
+ADD (P,4) ='10'
+MEND
