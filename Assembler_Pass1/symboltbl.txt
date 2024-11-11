@@ -1,0 +1,7 @@
+---- SYMBOL TABLE ----
+1       A 217
+3       B 218
+7       BACK 202
+6       LAST 216
+2       LOOP 202
+4       NEXT 214
