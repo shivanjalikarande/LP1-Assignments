@@ -9,7 +9,7 @@ MOVER &B, &Y,
 ADD &A, ='5' 
 MEND 
 MACRO 
-M2 &P, &Q, &U=CREG, &V=DREG 
+M2 &P, &Q, &U=CREG, &V=DREG,
 MOVER &U, &P, 
 MOVER &V, &Q, 
 ADD &U, ='15' 
