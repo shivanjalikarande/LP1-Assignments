@@ -1,80 +1,174 @@
-
 import tkinter as tk
-from tkinter import messagebox,ttk
-def sign():
-    messagebox.showinfo("Signed up successfully!!")
-    tab_controls.select(login_tab)
-def login():
-    username=usr_entry.get()
-    password=pass_entry.get()
-    if(username=="Nikita"  and password=="123"):
-        messagebox.showinfo("Welocme!! Logged in Successfully")
-        enable()
-        tab_controls.forget(login_tab)
-        tab_controls.forget(sign_up)
-    else:
-        messagebox.showerror("Invalid username or password")
-def enable():
-    tab_controls.tab(2,state="normal")
-    tab_controls.tab(3,state="normal")
-root=tk.Tk()
-root.geometry("800x600")
-root.title("PICT HOSTEL MANAGEMENT SYSTEM")
-root.configure(bg="lightgray")
-tab_controls=ttk.Notebook(root)
-sign_up=ttk.Frame(tab_controls)
-login_tab=ttk.Frame(tab_controls)
-home_tab=ttk.Frame(tab_controls)
-guidelines=ttk.Frame(tab_controls)
-tab_controls.add(sign_up,text="Sign Up")
-tab_controls.add(login_tab,text="Login")
-tab_controls.add(home_tab,text="Home page",state="disabled")
-tab_controls.add(guidelines,text="Guidelines",state="disabled")
-fields=["Name","Branch","Year","username","password"]
-for i in fields:
-    tk.Label(sign_up,text=i,font="arial").pack(pady=5)
-    input=tk.Entry(sign_up,width=40)
-    if i=="password":
-        input.config(show="*")
-    input.pack(pady=5)
-sign_up_btn=tk.Button(sign_up,text="Sign Up",bg="red",fg="yellow",font="arial",command=sign)
-sign_up_btn.pack(pady=10)
+from tkinter import messagebox
 
-usr_label=tk.Label(login_tab,text="Enter Username",font="arial")
-usr_label.pack(pady="10")
-usr_entry=tk.Entry(login_tab,width="20",font="arial")
-usr_entry.pack(pady="10")
+"""Initializing main window"""
+root = tk.Tk()
+root.title("PICT Hostel Management System")
+root.geometry("900x700")
+root.configure(bg="white")
 
-pass_label=tk.Label(login_tab,text="Enter password",font="arial")
-pass_label.pack(pady="10")
-pass_entry=tk.Entry(login_tab,width="20",font="arial")
-pass_entry.config(show="*")
-pass_entry.pack(pady="10")
+def show_frame(frame):
+    frame.tkraise()
 
-login_btn=tk.Button(login_tab,text="Login",bg="Red",fg="Yellow",command=login,font="arial")
-login_btn.pack(pady="20")
-tk.Label(home_tab,text="PICT Hostel Management System",bg="blue",fg="white",font="arial").pack(pady=20)
-features="""
-1 24/7 Security
-2 Unlimites WiFI
-3 Lunch and Dinner with breakfast
-4 High class amenities
-5 Hot Water 
-6 Medical checkup once in week
-7 Daily Attendance
-8 Admission On the basis of CGPA"""
-tk.Label(home_tab,text=features,bg="lightblue").pack(pady=20)
-tk.Label(guidelines,text="Guidelines",bg="blue",fg="white",font="arial").pack(pady=20)
-gui="""
-1. Students must adhere to hostel timings strictly.
+"""Colors"""
+bg_color = "#f0f0f0"
+navbar_color = "blue"
+text_color="#ffffff"
+button_color="#99ccff"
+card_color = "#cce7ff"
+card_text = "#333333"
+footer_color = "#333333"
+
+"""creating different frames"""
+main_frame = tk.Frame(root,bg=bg_color)
+login_frame = tk.Frame(root,bg=bg_color)
+signup_frame = tk.Frame(root,bg=bg_color)
+guidelines_frame = tk.Frame(root,bg=bg_color)
+
+for frame in(main_frame,login_frame,signup_frame,guidelines_frame):
+    frame.grid(row=1,column=0,stick="nsew")
+
+root.grid_rowconfigure(1,weight=1)  
+root.grid_columnconfigure(0,weight=1)
+
+
+""" A. main page content"""
+pict_label = tk.Label(main_frame,text="PICT",font=("Arial",24,"bold"),bg=bg_color)
+pict_label.pack(pady=20)
+title_page = tk.Label(main_frame,text="PUNE INSTITUTE OF COMPUTER TECHNOLOGY",font=("Arial",18),bg=bg_color)
+title_page.pack(pady=10)
+
+
+""" A.a) navbar """
+navbar_frame = tk.Frame(root,bg=navbar_color,height=50)
+navbar_frame.grid(row=0,column=0,stick="ew")
+
+navbar_buttons = ["Home", "Guidelines"]
+for btn in navbar_buttons:
+    btn = tk.Button(navbar_frame,text=btn,bg=button_color,fg=text_color,font=("Arial",12),command=lambda b=btn: navbar_links(b))
+    btn.pack(side="left",padx=15, pady=15)
+
+navbar_buttons = ["Signup","Login"]
+for btn in navbar_buttons:
+    btn = tk.Button(navbar_frame,text=btn,fg=text_color,bg=button_color,font=("Arial",12),command=lambda b=btn: navbar_links(b))
+    btn.pack(side="right",padx=15,pady=15)
+
+def navbar_links(button_name):
+    if button_name == "Home":
+        show_frame(main_frame)
+    elif button_name == "Login":
+        show_frame(login_frame)
+    elif button_name == "Signup":
+        show_frame(signup_frame)
+    elif button_name == "Guidelines":
+        show_frame(guidelines_frame)
+
+""" A.b) cards on main page"""
+def show_cards(frame,side,title,desc):
+    card_frame = tk.Frame(frame,bg=card_color,padx=20,pady=20)
+    if side == "left":
+        card_frame.pack(anchor="w",pady=20,padx=20)
+    elif side == "right":
+        card_frame.pack(anchor="e",pady=20,padx=20)
+
+    cards_title = tk.Label(card_frame,text=title,font=("Arial",14))
+    cards_title.pack(anchor="w")
+    cards_desc = tk.Label(card_frame,text=desc,font=("Arial",12))
+    cards_desc.pack(anchor="w")
+
+features = [
+    ("Hostel Facilities", "We provide excellent hostel facilities including mess, laundry, and 24/7 security services."),
+    ("Student Attendance", "Track student attendance effectively with our digital attendance management system."),
+    ("Complaint Resolution", "A streamlined system for students to raise complaints and get quick resolutions."),
+    ("Health and Safety", "Health and safety measures are our priority with regular health checkups and emergency services.")
+]
+    
+cards_frame = tk.Frame(main_frame,bg=bg_color)
+cards_frame.pack(pady=20,fill="x")
+for i, (title,desc) in enumerate(features):
+    side = "left" if i%2 == 0 else "right"
+    show_cards(cards_frame,side,title,desc)
+
+
+""" A. c) Footer """
+footer_frame = tk.Frame(root,bg=footer_color)
+footer_frame.grid(row=2,column=0,stick="ew")
+
+address_label = tk.Label(footer_frame,text="Address:\nPICT, Near Bharati Vidypeeth,\nDhankwadi, Pune - 411043",
+                        fg=text_color, bg=footer_color, font=("Arial", 10))
+address_label.pack(side="left",padx=20,pady=10)
+
+hours_label = tk.Label(footer_frame, text="Office Hours:\nMon-Fri: 9am-5pm\nSat: 10am-2pm\nSun: Closed",
+                       fg=text_color, bg=footer_color, font=("Arial", 10))
+hours_label.pack(side="left", padx=20, pady=20)
+
+contact_label = tk.Label(footer_frame, text="Contact:\nEmail: info@pict.edu\nPhone: +91-1234567890",
+                         fg=text_color, bg=footer_color, font=("Arial", 10))
+contact_label.pack(side="right", padx=20, pady=20)
+
+# Social Media icons (placeholder)
+social_media_frame = tk.Frame(footer_frame, bg=footer_color)
+social_media_frame.pack(side="right", padx=10, pady=10)
+
+social_icons = ["F", "T", "I", "G"]  # Facebook, Twitter, Instagram, Google (placeholders)
+for icon in social_icons:
+    icon_label = tk.Label(social_media_frame, text=icon, width=2, bg="#666666", fg=text_color, font=("Arial", 12))
+    icon_label.pack(side="left", padx=5)
+
+
+""" B. Guidelines Page """
+guidelines_title = tk.Label(guidelines_frame, text="Guidelines", font=("Arial", 24), bg=bg_color)
+guidelines_title.pack(pady=20)
+
+guidelines_text = """
+1. Students must adhere to the hostel timings strictly.
 2. Visitors are allowed only during specified hours.
 3. No loud music or noise after 10 PM.
 4. Maintain cleanliness in rooms and common areas.
 5. Any damage to hostel property must be reported immediately.
 6. Ragging in any form is strictly prohibited.
-    """
-tk.Label(guidelines,text=gui,bg="lightblue").pack(pady=20)
-tab_controls.pack(expand=1,fill="both")
+"""
+guidelines_label = tk.Label(guidelines_frame, text=guidelines_text, font=("Arial", 12), bg=bg_color, justify="left")
+guidelines_label.pack(pady=10)
 
 
+""" C. LOGIN PAGE """
+login_title = tk.Label(login_frame,text="LOGIN",bg=bg_color,font=("Arial",24,"bold"))
+login_title.pack(pady=15)
+
+username_label = tk.Label(login_frame,text="Username",bg=bg_color,font=("Arial",14))
+username_label.pack(pady=5)
+username_entry = tk.Entry(login_frame,width=30)
+username_entry.pack(pady=5)
+
+password_label = tk.Label(login_frame,text="Password",bg=bg_color,font=("Arial",14))
+password_label.pack(pady=5)
+password_entry = tk.Entry(login_frame,width=30)
+password_entry.pack(pady=5)
+
+login_button = tk.Button(login_frame,text="Login",bg=button_color,fg=text_color,font=("Arial",14),command= lambda: messagebox.showinfo("Login","Login successfull"))
+login_button.pack(pady=20)
+
+""" D. SIGNUP PAGE"""
+signup_title = tk.Label(signup_frame,text="SIGNUP",bg=bg_color,font=("Arial",24,"bold"))
+signup_title.pack(pady=15)
+
+fields = ["Full Name", "Class", "Division", "Username", "Password"]
+entries = {}
+
+for field in fields:
+    label = tk.Label(signup_frame, text=f"{field}:", font=("Arial", 14), bg=bg_color)
+    label.pack(pady=5)
+    entry = tk.Entry(signup_frame, width=30)
+    if field == "Password":
+        entry.config(show="*")
+    entry.pack(pady=5)
+    entries[field] = entry
+
+register_button = tk.Button(signup_frame, text="Register", bg=button_color, fg=text_color, font=("Arial", 14),
+                            command=lambda: messagebox.showinfo("Sign-Up", "Registration Successful"))
+register_button.pack(pady=20)
+
+"""to run the program"""
+show_frame(main_frame)
 root.mainloop()
