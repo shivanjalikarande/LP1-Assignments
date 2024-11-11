@@ -1,101 +1,125 @@
-import java.util.Vector;
 import java.util.concurrent.Semaphore;
+import java.util.Vector;
+import java.lang.Thread;
+import java.lang.Runnable;
 
-class Container {
-    Vector<Integer> buffer = new Vector<>(100);
-    static final int BUFFER_SIZE = 100;
+class Container
+{
+    Vector<Integer>buffer = new Vector<>(10);
+    static final int buffer_size = 10;
 
-    // Semaphores for synchronization
-    static Semaphore con = new Semaphore(0); // Counts filled slots
-    static Semaphore prod = new Semaphore(1); // Mutex for buffer access
-    static Semaphore limit = new Semaphore(BUFFER_SIZE); // Counts empty slots
+    static Semaphore con = new Semaphore(0);   //counts filled slots
+    static Semaphore prod = new Semaphore(1);  //currently free resource --> mutex if prod(0)
+    static Semaphore empty_slots = new Semaphore(buffer_size);  //count empty slots
 
-    // Producer method
-    void put(int item) {
-        try {
-            limit.acquire(); // Wait for an empty slot
-            prod.acquire(); // Lock buffer for exclusive access
+    //Here, prod - binary semaphore(initialized with value (1) and takes only 2 values 0 or 1 indicating mutex conditions) 
+    // con,empty_slots - counting semaphores 
 
-            buffer.add(item); // Produce item
-            System.out.println("Producer produced item " + item);
-            System.out.println("No. of items produced: " + buffer.size());
-            System.out.println("Remaining production capacity: " + limit.availablePermits());
-            System.out.println();
+    void put(int item)
+    {
+        try
+        {
+            prod.acquire();  //mutex applied -> resource is locked by only one thread -> set prod(0)
+            empty_slots.acquire();  //wait for empty slots  //decreses count of empty_slots by one as producer is producing
 
-            prod.release(); // Unlock buffer
-            con.release(); // Signal a filled slot is available
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
+            buffer.add(item);
+            System.out.println("\nProducer produced item: "+item);
+            System.out.println("No of items produced: "+buffer.size());
+            System.out.println("No of items producer can still produced: "+empty_slots.availablePermits());
+
+            prod.release(); //prod(1) -> resource is availatble
+            con.release(); //signaling that consumer can consume now
+
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println("Exception: "+e);
         }
     }
+    
+    void get()
+    {
+        try
+        {
+            prod.acquire();
+            con.acquire();
 
-    // Consumer method
-    void get() {
-        try {
-            con.acquire(); // Wait for a filled slot
-            prod.acquire(); // Lock buffer for exclusive access
-
-            if (buffer.size() > 0) {
-                int consumedItem = buffer.remove(0); // Consume one item
-                System.out.println("Consumer consumed item " + consumedItem);
-                System.out.println("Items left in buffer: " + buffer.size());
+            if(buffer.size() > 0)
+            {
+                int item = buffer.remove(0);
+                System.out.println("\nItem consumed is: "+item);  //removes 0th index element
+                System.out.println("No of itmes left in buffer: "+buffer.size());
             }
-            System.out.println();
 
-            prod.release(); // Unlock buffer
-            limit.release(); // Signal an empty slot is available
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
+            prod.release();
+            empty_slots.release();   //increase no of empty_slots semaphore value by 1
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println("\nException: "+e);
         }
     }
+
 }
 
-class Producer implements Runnable {
-    Container container;
+class Producer implements Runnable
+{
+    Container ct;
     Thread t;
-
-    Producer(Container c) {
-        this.container = c;
-        t = new Thread(this, "Producer");
+    Producer(Container ct)
+    {
+        this.ct = ct;
+        t = new Thread(this,"Producer");
         t.start();
     }
-
-    public void run() {
-        try {
-            for (int i = 0; i < 100; i++) {
-                container.put(i);
-                Thread.sleep(5); // Simulate production delay
+    public void run()
+    {
+        try
+        {
+            for(int i=1;i<=10;i++)
+            {
+                ct.put(i);
+                Thread.sleep(5);
             }
-        } catch (InterruptedException e) {
-            System.out.println("Error: " + e);
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println("Exception: "+e);
         }
     }
 }
 
-class Consumer implements Runnable {
-    Container container;
+class Consumer implements Runnable
+{
+    Container ct;
     Thread t;
-
-    Consumer(Container c) {
-        this.container = c;
-        t = new Thread(this, "Consumer");
+    Consumer(Container ct)
+    {
+        this.ct = ct;
+        t = new Thread(this,"Consumer");
         t.start();
     }
-
-    public void run() {
-        try {
-            for (int i = 0; i < 100; i++) {
-                container.get();
-                Thread.sleep(30); // Simulate consumption delay
+    public void run()
+    {
+        try
+        {
+            for(int i=1;i<=10;i++)
+            {
+                ct.get();
+                Thread.sleep(30);
             }
-        } catch (InterruptedException e) {
-            System.out.println("Error: " + e);
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println("Exception: "+e);
         }
     }
 }
 
-class Producer_Consumer {
-    public static void main(String[] args) {
+class Producer_Consumer
+{
+    public static void main(String [] args)
+    {
         Container container = new Container();
         Producer producer = new Producer(container);
         Consumer consumer = new Consumer(container);
